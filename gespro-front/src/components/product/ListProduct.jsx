@@ -14,6 +14,8 @@ const ListProduct = () => {
 
   const fetchProducts = async () => {
     try {
+      await axios.get("http://localhost:8000/sanctum/csrf-cookie", { withCredentials: true });
+
       const response = await api.get("/products");
       setProducts(response.data);
     } catch (error) {
@@ -28,8 +30,9 @@ const ListProduct = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/products/${selectedProduct}`);
+      await api.delete(`/products/${selectedProduct}`, { withCredentials: true });
       setProducts(products.filter((p) => p.id !== selectedProduct));
+      fetchProducts();
     } catch (error) {
       console.error("Erreur lors de la suppression", error);
     } finally {
@@ -102,7 +105,7 @@ const ListProduct = () => {
                   <tr key={product.id}>
                     <td className="ps-6 py-3">
                       <div className="flex items-center gap-x-3">
-                        <span className="inline-flex items-center justify-center size-9.5 rounded-full bg-white border border-gray-300">
+                        <span className="inline-flex items-center justify-center size-9.5 bg-white border border-gray-300">
                           <img
                             className="inline-block size-16 object-cover"
                             src={product.image}
@@ -124,7 +127,7 @@ const ListProduct = () => {
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-sm text-gray-500">
-                        {product.category}
+                        {product.category?.name}
                       </span>
                     </td>
                     <td className="px-6 py-1.5 text-end">

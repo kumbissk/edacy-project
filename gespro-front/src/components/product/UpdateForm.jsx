@@ -1,4 +1,62 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import api from '../../axios';
+
 export default function UpdateForm() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [status, setStatus] = useState("disponible");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+
+  useEffect(() => {
+    api.get(`/products/${id}`)
+      .then((res) => {
+        const product = res.data;
+        setName(product.name);
+        setPrice(product.price);
+        setStatus(product.status);
+        setDescription(product.description);
+        setImage(product.image);
+      })
+      .catch((err) => {
+        console.error("Erreur lors du chargement :", err);
+      });
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price",price);
+    formData.append("status", status);
+    formData.append("description", description);
+    formData.append("category_id", 1);
+    formData.append("image", image);
+
+    try {
+      await axios.get("http://localhost:8000/sanctum/csrf-cookie", { withCredentials: true });
+      const response = await api.post(
+        `/products/${id}?_method=PUT`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Produit modifié :", response.data);
+      alert("Produit modifié!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erreur de modification :", error);
+    }
+  };
+
   return (
     <main className="p-4 sm:p-6 lg:ps-72 lg:pe-8 bg-gray-50 min-h-screen">
       <div className="flex flex-col">
@@ -13,7 +71,8 @@ export default function UpdateForm() {
                 </div>
               </div>
 
-              <form className="px-6 py-6 space-y-6">
+              <form onSubmit={handleSubmit} className="px-6 py-6 space-y-6">
+              
                 <div>
                   <label className="block text-sm font-medium text-darkColor mb-1">
                     Nom du produit
@@ -21,8 +80,9 @@ export default function UpdateForm() {
                   <input
                     type="text"
                     name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Ex: Ordinateur portable"
                   />
                 </div>
 
@@ -33,8 +93,9 @@ export default function UpdateForm() {
                   <input
                     type="number"
                     name="price"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Ex: 10000"
                   />
                 </div>
 
@@ -44,6 +105,8 @@ export default function UpdateForm() {
                   </label>
                   <select
                     name="status"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="disponible">Disponible</option>
@@ -58,20 +121,22 @@ export default function UpdateForm() {
                   <textarea
                     name="description"
                     rows="4"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Décrivez le produit..."
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-darkColor mb-1">
-                    Image du produit
+                    Nouvelle image (optionnel)
                   </label>
                   <input
-                    type="file"
+                    type="text"
                     name="image"
-                    accept="image/*"
-                    className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-secondaryColor hover:file:bg-blue-100"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 

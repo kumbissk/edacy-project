@@ -1,4 +1,50 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import api from '../../axios';
+
 export default function AddForm() {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [status, setStatus] = useState("disponible");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", parseFloat(price));
+    formData.append("status", status);
+    formData.append("description", description);
+    formData.append("image", image);
+    formData.append("category_id", 1);
+
+    try {
+      await axios.get("http://localhost:8000/sanctum/csrf-cookie", { withCredentials: true });
+
+      const response = await api.post("/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+
+      });
+      // console.log("Produit ajouté :", response.data);
+      setName("");
+      setPrice("");
+      setStatus("disponible");
+      setDescription("");
+      setImage("");
+
+      alert("Produit ajouté!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erreur :", error.response.data);
+    }
+  };
+
   return (
     <main className="p-4 sm:p-6 lg:ps-72 lg:pe-8 bg-gray-50 min-h-screen">
       <div className="flex flex-col">
@@ -13,7 +59,7 @@ export default function AddForm() {
                 </div>
               </div>
 
-              <form className="px-6 py-6 space-y-6">
+              <form onSubmit={handleSubmit} className="px-6 py-6 space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-darkColor mb-1">
                     Nom du produit
@@ -21,8 +67,11 @@ export default function AddForm() {
                   <input
                     type="text"
                     name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Ex: Ordinateur portable"
+                    required
                   />
                 </div>
 
@@ -33,8 +82,11 @@ export default function AddForm() {
                   <input
                     type="number"
                     name="price"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Ex: 10000"
+                    required
                   />
                 </div>
 
@@ -44,6 +96,8 @@ export default function AddForm() {
                   </label>
                   <select
                     name="status"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="disponible">Disponible</option>
@@ -57,6 +111,8 @@ export default function AddForm() {
                   </label>
                   <textarea
                     name="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     rows="4"
                     className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Décrivez le produit..."
@@ -68,10 +124,12 @@ export default function AddForm() {
                     Image du produit
                   </label>
                   <input
-                    type="file"
+                    type="text"
                     name="image"
-                    accept="image/*"
-                    className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-secondaryColor hover:file:bg-blue-100"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    className="block w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 text-sm text-gray-800 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Coller ici l'URL de l'image"
                   />
                 </div>
 

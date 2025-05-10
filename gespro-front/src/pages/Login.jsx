@@ -20,6 +20,7 @@ const Login = () => {
     try {
       const response = await axios.post(`${API_URL}/login`, form);
       await axios.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true });
+      // console.log(response.data);
       const token = response.data.token;
 
       localStorage.setItem("token", token);
