@@ -24,9 +24,6 @@ Ce projet est une application web fullstack permettant la gestion de produits av
 git clone https://github.com/kumbissk/edacy-project.git
 ```
 
-```bash
-cd gespro
-```
 
 ### Backend (Laravel)
 
