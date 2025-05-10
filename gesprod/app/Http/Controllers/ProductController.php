@@ -47,13 +47,19 @@ class ProductController extends Controller
             'name' => 'required|string',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'sometimes|exists:categories,id',
             'image' => 'nullable|string',
-            'status' => 'in:disponible,en rupture'
+            'status' => 'in:disponible, rupture'
         ]);
 
-        // dd($product);
         $product->update($validated);
+        return response()->json($product);
+        // dd($product);
+    }
+
+    public function show($id)
+    {
+        $product = Product::findOrFail($id);
         return response()->json($product);
     }
 
