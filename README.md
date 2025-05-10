@@ -2,12 +2,6 @@
 
 Ce projet est une application web fullstack permettant la gestion de produits avec authentification utilisateur (admin & employé). Elle a été développée avec Laravel (API REST + Sanctum) pour le backend et React.js + Tailwind CSS pour le frontend. La base de données utilisée est MySQL avec PHPmyAdmin.
 
-## Vidéo Demo
-
-<video width="640" height="360" controls>
-  <source src="video/VideoDemoEdacy.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
 
 ## Fonctionnalités principales
 
